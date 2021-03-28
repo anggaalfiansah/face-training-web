@@ -10,7 +10,7 @@ export default function Train() {
   const dataFace = useSelector((state) => state.faceReducer.list);
   const webcam = React.useRef(null);
   const inputSize = 160;
-  const [WIDTH, setWIDTH] = useState(720);
+  const [WIDTH] = useState(420);
   const [HEIGHT] = useState(420);
   const [detections, setdetections] = useState();
   const [facingMode, setfacingmode] = useState("user");
@@ -39,7 +39,6 @@ export default function Train() {
         await setfacingmode("user");
       } else {
         setChangeCamera(false);
-        setWIDTH(420);
       }
     });
   };
@@ -85,7 +84,7 @@ export default function Train() {
   const submit = () => {
     // Silahkan Atur Minimal Jumlah Sample Wajah
     if (ListFace.length < 5) {
-      alert("Sample wajah kurang banyak");
+      alert("Sample wajah minimal 5");
     } else {
       const listFace = dataFace;
       const Face = {
@@ -98,8 +97,8 @@ export default function Train() {
         type: "Submit Face",
         value: listFace,
       });
-      alert(`Wajah Baru Dengan Nama ${Nama} Berhasil Ditambahkan`);
-      setNama("");
+      alert(`Wajah Anda Berhasil Ditambahkan`);
+      document.getElementById("nama-wajah").value = "";
       setListFace([]);
       window.ReactNativeWebView.postMessage(JSON.stringify(Face));
     }
@@ -146,6 +145,12 @@ export default function Train() {
           style={{ position: "absolute", width: "100%", height: "100%" }}
         >
           <Spinner />
+          <h4
+            className="p-2 col-10 mx-auto rounded text-center"
+            style={{ backgroundColor: "rgba(240, 240, 240, 0.5)" }}
+          >
+            Harap Tahan Posisi Sampai Proses Training Selesai
+          </h4>
         </div>
       );
     }
@@ -153,14 +158,15 @@ export default function Train() {
 
   return (
     <div
-      className="Camera"
+      className="border m-2 pb-3 rounded"
       style={{
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        background: "rgba(255, 99, 147, 0.5)",
       }}
     >
-      <h1>Halaman Train Wajah</h1>
+      <h1 className="my-2 p-3">DAFTARKAN WAJAH</h1>
       <div
         style={{
           width: WIDTH,
@@ -185,50 +191,53 @@ export default function Train() {
           {!!drawBox ? drawBox : null}
         </div>
       </div>
-      <div className="row mt-3" hidden={ChangeCamera}>
-        <div className="mx-auto">
+      <div className="row mt-3 col-10">
+        <div className="col-3">
           <button
-            className="btn btn-primary mx-4"
-            onClick={() => setfacingmode("user")}
+            hidden={ChangeCamera}
+            className="btn btn-outline-primary my-1 mx-auto col-12"
+            onClick={() => {
+              if (facingMode === "user")
+                setfacingmode({ exact: "environment" });
+              else setfacingmode("user");
+            }}
           >
-            Front Camera
-          </button>
-          <button
-            className="btn btn-primary mx-4"
-            onClick={() => setfacingmode({ exact: "environment" })}
-          >
-            Back Camera
+            Switch
           </button>
         </div>
-      </div>
-      <div className="row mt-3 col-6 mx-auto">
-        <div className="col-md-6 mx-auto">
+        <div className="col-5">
           <button
-            className="col-md-12 btn btn-outline-secondary"
+            className="btn btn-outline-success my-1 mx-auto col-12"
             onClick={captured}
           >
-            Train
+            Train Face
           </button>
         </div>
-        <div className="col-md-6 mx-auto">
+        <div className="col-4">
           <button
-            className="col-md-12 btn btn-outline-secondary"
+            className="btn btn-outline-danger my-1 mx-auto col-12"
             onClick={() => setdetections()}
           >
-            Clear Detection
+            Reset Box
           </button>
         </div>
       </div>
-      <div className="row mt-3 col-6 border px-2 py-2">
-        <h5>Daftarkan Wajah</h5>
-        <div className="mb-1">Jumlah Sample Wajah : {ListFace.length}</div>
+      <div className="row mt-3 col-10 p-2">
+        <div className="mb-1 text-center">
+          Sample Wajah : {ListFace.length}
+        </div>
+        <hr/>
+        <h6 className="small text-center">
+          Jumlah Sample Minimal 5, lebih banyak lebih akurat
+        </h6>
+        <hr/>
         <input
           type="text"
           id="nama-wajah"
           className="form-control text-center"
-          placeholder="Masukan Nama Wajah"
-          value={Nama}
+          placeholder="Masukan Nama"
           onChange={(e) => setNama(e.target.value)}
+          required
         />
         <button
           className="col-md-5 btn btn-primary mx-auto mt-2"
@@ -245,19 +254,8 @@ export default function Train() {
             setCount(Count + 1);
           }}
         >
-          Reset
+          Reset Sample Wajah
         </button>
-        <hr className="mt-1" />
-        <div className="text-center">
-          <h5>List Wajah Yang Terdaftar</h5>
-          {dataFace.map((face, key) => {
-            return (
-              <div key={key}>
-                {key + 1}. {face.name}
-              </div>
-            );
-          })}
-        </div>
       </div>
     </div>
   );
