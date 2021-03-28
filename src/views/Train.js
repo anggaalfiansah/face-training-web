@@ -101,6 +101,7 @@ export default function Train() {
       alert(`Wajah Baru Dengan Nama ${Nama} Berhasil Ditambahkan`);
       setNama("");
       setListFace([]);
+      window.ReactNativeWebView.postMessage(JSON.stringify(Face))
     }
   };
 
