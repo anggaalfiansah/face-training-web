@@ -46,7 +46,7 @@ export default function Train() {
 
   // Fungsi Untuk Mengcapture gambar dan memprosesnya secara berkala.
   const captured = async () => {
-    setdetections()
+    setdetections();
     setLoading(true);
     await faces.loadModels();
     const capture = webcam.current.getScreenshot();
@@ -101,7 +101,7 @@ export default function Train() {
       alert(`Wajah Baru Dengan Nama ${Nama} Berhasil Ditambahkan`);
       setNama("");
       setListFace([]);
-      window.ReactNativeWebView.postMessage(JSON.stringify(Face))
+      window.ReactNativeWebView.postMessage(JSON.stringify(Face));
     }
   };
 
@@ -224,6 +224,7 @@ export default function Train() {
         <div className="mb-1">Jumlah Sample Wajah : {ListFace.length}</div>
         <input
           type="text"
+          id="nama-wajah"
           className="form-control text-center"
           placeholder="Masukan Nama Wajah"
           value={Nama}
