@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import * as faces from "../api/faces";
 import Webcam from "react-webcam";
-// import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Spinner from "./Loading/Spinner";
 
 export default function Train() {
@@ -163,10 +163,9 @@ export default function Train() {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        background: "rgba(255, 99, 147, 0.5)",
       }}
     >
-      <h1 className="my-2 p-3">DAFTARKAN WAJAH</h1>
+      <h1 className="my-2 p-2">DAFTARKAN WAJAH</h1>
       <div
         style={{
           width: WIDTH,
@@ -222,15 +221,13 @@ export default function Train() {
           </button>
         </div>
       </div>
-      <div className="row mt-3 col-10 p-2">
-        <div className="mb-1 text-center">
-          Sample Wajah : {ListFace.length}
-        </div>
-        <hr/>
+      <div className="row mt-1 col-10 p-2">
+        <div className="mb-1 text-center">Sample Wajah : {ListFace.length}</div>
+        <hr />
         <h6 className="small text-center">
           Jumlah Sample Minimal 5, lebih banyak lebih akurat
         </h6>
-        <hr/>
+        <hr />
         <input
           type="text"
           id="nama-wajah"
@@ -239,12 +236,13 @@ export default function Train() {
           onChange={(e) => setNama(e.target.value)}
           required
         />
-        <button
+        <Link
+          to="/Test"
           className="col-md-5 btn btn-primary mx-auto mt-2"
           onClick={submit}
         >
           Submit
-        </button>
+        </Link>
         <button
           className="col-md-5 btn btn-danger mx-auto mt-2"
           onClick={() => {
