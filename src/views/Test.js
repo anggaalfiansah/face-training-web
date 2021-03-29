@@ -9,7 +9,7 @@ export default function Test() {
   const dataFace = useSelector((state) => state.faceReducer.list);
   const webcam = React.useRef(null);
   const inputSize = 160;
-  const [WIDTH, setWIDTH] = useState(720);
+  const [WIDTH] = useState(420);
   const [HEIGHT] = useState(420);
   const [detections, setdetections] = useState();
   const [faceMatcher, setfaceMatcher] = useState();
@@ -42,7 +42,6 @@ export default function Test() {
         await setfacingmode("user");
       } else {
         setChangeCamera(false);
-        setWIDTH(420);
       }
     });
   };
@@ -75,9 +74,9 @@ export default function Test() {
                 } else {
                   if (match[0]._label === dataFace[0].name) {
                     alert("Verifikasi Wajah Berhasil");
-                    window.ReactNativeWebView.postMessage("Verifikasi Berhasil");
-                    setCount(Count + 1);
-                    console.log(Count);
+                    window.ReactNativeWebView.postMessage(
+                      "Verifikasi Berhasil"
+                    );
                   } else {
                     setCount(Count + 1);
                     console.log(Count);
@@ -178,7 +177,10 @@ export default function Test() {
           {!!drawBox ? drawBox : null}
         </div>
       </div>
-      <h6 className="small text-center mt-1 p-2">Pastikan pencahayaan cukup dan wajah terlihat dilayar untuk mempermudah verifikasi</h6>
+      <h6 className="small text-center mt-1 p-2">
+        Pastikan pencahayaan cukup dan wajah terlihat dilayar untuk mempermudah
+        verifikasi
+      </h6>
       <div className="row mt-1 col-10">
         <div className="col-3">
           <button
