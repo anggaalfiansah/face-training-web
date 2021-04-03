@@ -98,9 +98,8 @@ export default function Train() {
         value: listFace,
       });
       alert(`Wajah Anda Berhasil Ditambahkan`);
-      document.getElementById("nama-wajah").value = "";
       setListFace([]);
-      window.ReactNativeWebView.postMessage(JSON.stringify(Face));
+      window.ReactNativeWebView.postMessage(JSON.stringify(Face.descriptors));
     }
   };
 
