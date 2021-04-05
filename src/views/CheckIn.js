@@ -1,25 +1,31 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import * as faces from "../api/faces";
+import * as faces from "../api/faces2";
 import Webcam from "react-webcam";
+import MODAL from "react-modal";
+import axios from "axios";
 import "./styles.css";
 
-export default function Test() {
-  const dataFace = useSelector((state) => state.faceReducer.list);
+export default function CheckIn() {
   const webcam = React.useRef(null);
   const inputSize = 160;
-  const [WIDTH] = useState(420);
-  const [HEIGHT] = useState(420);
+  const [WIDTH] = useState(512);
+  const [HEIGHT] = useState(512);
   const [detections, setdetections] = useState();
   const [faceMatcher, setfaceMatcher] = useState();
   const [match, setmatch] = useState();
-  const facingMode = useState("user");
+  const [facingMode, setfacingmode] = useState("user");
   const [Count, setCount] = useState(0);
+  const [Modal, setModal] = useState(false);
+  const [Response, setResponse] = useState({
+    message: "Anda tidak punya akses",
+  });
+  const url = "https://services-tugas-akhir-jc.herokuapp.com";
 
   useEffect(() => {
     const fetch = async () => {
-      setfaceMatcher(await faces.createMatcher(dataFace));
+      await setInputDevice();
+      await getfaceData();
       if (!!faceMatcher) {
         captured();
       } else {
@@ -30,8 +36,28 @@ export default function Test() {
     return fetch();
   }, [Count]);
 
+  const getfaceData = async () => {
+    const response = await axios.get(`${url}/Face`);
+    console.log(response);
+    setfaceMatcher(await faces.createMatcher(response.data.data));
+  };
+
+  //   Fungsi Untuk Menentukan Camera
+  const setInputDevice = () => {
+    navigator.mediaDevices.enumerateDevices().then(async (devices) => {
+      let inputDevice = await devices.filter(
+        (device) => device.kind === "videoinput"
+      );
+      if (inputDevice.length < 2) {
+        await setfacingmode("user");
+      }
+    });
+  };
+
   // Fungsi Untuk Mengcapture gambar dan memprosesnya secara berkala.
   const captured = async () => {
+    await setmatch();
+    await setdetections();
     await faces.loadModels();
     try {
       const capture = webcam.current.getScreenshot();
@@ -51,21 +77,16 @@ export default function Test() {
                 setmatch(match);
                 console.log(detect);
                 console.log(match);
-                if (match.length < 1) {
-                  alert("Wajah tidak terdeteksi");
+                if (match.length > 0) {
+                  console.log(match[0]._label.split("+")[0]);
+                  CheckIn(match[0]._label.split("+")[0]);
+                } else {
                   setCount(Count + 1);
                   console.log(Count);
-                } else {
-                  if (match[0]._label === dataFace[0].name) {
-                    alert("Verifikasi Wajah Berhasil");
-                    window.ReactNativeWebView.postMessage(
-                      "Verifikasi Berhasil"
-                    );
-                  } else {
-                    setCount(Count + 1);
-                    console.log(Count);
-                  }
                 }
+              } else {
+                setCount(Count + 1);
+                console.log(Count);
               }
             }
           });
@@ -75,6 +96,57 @@ export default function Test() {
       }
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  const CheckIn = async (UserID) => {
+    const time = new Date();
+    const Tanggal = ("0" + time.getDate()).slice(-2);
+    const bulan = [
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember",
+    ];
+    const Bulan = bulan[time.getMonth()];
+    const Tahun = time.getFullYear();
+    const CheckIn = time.toString().substr(16, 5);
+
+    const data = {
+      UserID,
+      Tanggal,
+      Bulan,
+      Tahun,
+      CheckIn,
+    };
+    console.log(data);
+    try {
+      const checkin = await axios.put(`${url}/attendance/CheckIn`, data);
+      console.log(checkin);
+      setResponse(checkin.data);
+      setModal(true);
+      setTimeout(() => {
+        setModal(false);
+        setCount(Count + 1);
+        console.log(Count);
+      }, 5000);
+    } catch (err) {
+      console.log(err.message);
+      setResponse({ message: "Anda tidak punya akses" });
+      setModal(true);
+      setTimeout(() => {
+        setModal(false);
+        setCount(Count + 1);
+        console.log(Count);
+      }, 5000);
     }
   };
 
@@ -119,7 +191,7 @@ export default function Test() {
                   transform: `translate(-3px,${_H}px)`,
                 }}
               >
-                {match[i]._label}
+                {match[i]._label.split("+")[1]}
               </p>
             ) : null}
           </div>
@@ -134,19 +206,11 @@ export default function Test() {
       style={{
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center",
         alignItems: "center",
       }}
     >
-      <div
-        className="border m-2 rounded"
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <h1 className="my-2 p-2 text-white">VERIFIKASI WAJAH</h1>
+      <h1 className="text-center text-white">FACE RECOGNITION CHECK IN</h1>
+      <div className="border border-color p-2">
         <div
           style={{
             width: WIDTH,
@@ -170,11 +234,21 @@ export default function Test() {
             {!!drawBox ? drawBox : null}
           </div>
         </div>
-        <h6 className="small text-center mt-1 p-2">
-          Pastikan pencahayaan cukup dan wajah terlihat dilayar untuk
-          mempermudah verifikasi
-        </h6>
       </div>
+      <MODAL isOpen={Modal} ariaHideApp={false} style={customStyles}>
+        <h2>{Response.message}</h2>
+      </MODAL>
     </div>
   );
 }
+
+const customStyles = {
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+  },
+};
