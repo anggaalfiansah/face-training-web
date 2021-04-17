@@ -21,14 +21,7 @@ export default function Train() {
   const [Loading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    const fetch = async () => {
-      console.log(ListFace);
-    };
-    return fetch();
-  }, [Count]);
-
-  // Fungsi Untuk Mengcapture gambar dan memprosesnya secara berkala.
+  // Fungsi Untuk Mengcapture gambar dan memprosesnya.
   const captured = async () => {
     setdetections();
     setLoading(true);
@@ -65,6 +58,13 @@ export default function Train() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const fetch = async () => {
+      console.log(ListFace);
+    };
+    return fetch();
+  }, [Count]);
 
   const submit = () => {
     // Silahkan Atur Minimal Jumlah Sample Wajah
@@ -132,7 +132,7 @@ export default function Train() {
             className="p-2 col-10 mx-auto rounded text-center"
             style={{ backgroundColor: "rgba(240, 240, 240, 0.5)" }}
           >
-            Harap Tahan Posisi Sampai Proses Training Selesai
+            Sedang Mengambil Sample
           </h4>
         </div>
       );
@@ -212,7 +212,7 @@ export default function Train() {
           />
           <Link
             to="/Test"
-            className="col-md-5 btn btn-primary mx-auto mt-2"
+            className="col-md-5 btn btn-primary mx-auto my-2"
             onClick={submit}
           >
             Submit

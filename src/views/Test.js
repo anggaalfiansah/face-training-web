@@ -17,19 +17,6 @@ export default function Test() {
   const facingMode = useState("user");
   const [Count, setCount] = useState(0);
 
-  useEffect(() => {
-    const fetch = async () => {
-      setfaceMatcher(await faces.createMatcher(dataFace));
-      if (!!faceMatcher) {
-        captured();
-      } else {
-        setCount(Count + 1);
-        console.log(Count);
-      }
-    };
-    return fetch();
-  }, [Count]);
-
   // Fungsi Untuk Mengcapture gambar dan memprosesnya secara berkala.
   const captured = async () => {
     await faces.loadModels();
@@ -77,6 +64,19 @@ export default function Test() {
       console.log(err);
     }
   };
+
+  useEffect(() => {
+    const fetch = async () => {
+      setfaceMatcher(await faces.createMatcher(dataFace));
+      if (!!faceMatcher) {
+        captured();
+      } else {
+        setCount(Count + 1);
+        console.log(Count);
+      }
+    };
+    return fetch();
+  }, [Count]);
 
   let videoConstraints = null;
   if (!!facingMode) {
