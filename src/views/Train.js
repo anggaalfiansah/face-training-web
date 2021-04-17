@@ -17,7 +17,6 @@ export default function Train() {
   const facingMode = useState("user");
   const [Count, setCount] = useState(0);
   const [ListFace, setListFace] = useState([]);
-  const [Nama, setNama] = useState("");
   const [Loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -74,7 +73,7 @@ export default function Train() {
     } else {
       const listFace = dataFace;
       const Face = {
-        name: Nama,
+        name: document.getElementById("nama-wajah").value,
         descriptors: ListFace,
       };
       listFace.push(Face);
@@ -208,7 +207,6 @@ export default function Train() {
             id="nama-wajah"
             className="form-control text-center"
             placeholder="Masukan Nama"
-            onChange={(e) => setNama(e.target.value)}
             required
             hidden
           />
