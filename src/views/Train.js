@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import * as faces from "../api/faces";
 import Webcam from "react-webcam";
-import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import Spinner from "./Loading/Spinner";
 import "./styles.css";
 
@@ -20,6 +20,7 @@ export default function Train() {
   const [Nama, setNama] = useState("");
   const [Loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const history = useHistory();
 
   // Fungsi Untuk Mengcapture gambar dan memprosesnya.
   const captured = async () => {
@@ -61,7 +62,7 @@ export default function Train() {
 
   useEffect(() => {
     const fetch = async () => {
-      console.log(ListFace);
+      console.log(ListFace.length);
     };
     return fetch();
   }, [Count]);
@@ -84,6 +85,7 @@ export default function Train() {
       });
       setListFace([]);
       window.ReactNativeWebView.postMessage(JSON.stringify(Face.descriptors));
+      history.push("/test")
     }
   };
 
@@ -210,13 +212,12 @@ export default function Train() {
             required
             hidden
           />
-          <Link
-            to="/Test"
+          <button
             className="col-md-5 btn btn-primary mx-auto my-2"
             onClick={submit}
           >
             Submit
-          </Link>
+          </button>
           <button
             className="col-md-5 btn btn-danger mx-auto my-2"
             onClick={() => {
